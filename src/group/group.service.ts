@@ -187,7 +187,5 @@ export class GroupService {
         group.status = GroupStatus.PENDING;
       }
     }
-
-    // Add other group type checks if needed
   }
 }
