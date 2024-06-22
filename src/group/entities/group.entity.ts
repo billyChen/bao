@@ -45,6 +45,9 @@ export class Group {
   link: string;
 
   @Column()
+  endDate: Date; // End date of the group purchase
+
+  @Column()
   maxMembers: number; // Maximum number of members
 
   @ManyToMany(() => User, { eager: true })

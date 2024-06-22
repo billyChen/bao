@@ -31,6 +31,7 @@ export class GroupService {
       productId,
       orderAmount,
       maxMembers,
+      endDate,
     } = createGroupDto;
 
     // Fetch the user who is creating the group
@@ -64,6 +65,7 @@ export class GroupService {
       members: [user],
       maxMembers,
       link: uuidv4(), // Generate a unique link
+      endDate,
     });
 
     return this.groupRepository.save(group);
@@ -121,6 +123,7 @@ export class GroupService {
     if (!group) {
       throw new NotFoundException(`Group with ID ${groupId} not found`);
     }
+    this.checkAndUpdateGroupStatus(group);
 
     if (group.members.length >= group.maxMembers) {
       throw new BadRequestException(
@@ -151,9 +154,12 @@ export class GroupService {
       where: { link },
       relations: ['members'],
     });
+
     if (!group) {
       throw new NotFoundException(`Group with link ${link} not found`);
     }
+
+    this.checkAndUpdateGroupStatus(group);
 
     if (group.members.length >= group.maxMembers) {
       throw new BadRequestException(
@@ -186,6 +192,17 @@ export class GroupService {
       } else {
         group.status = GroupStatus.PENDING;
       }
+    }
+  }
+
+  private checkAndUpdateGroupStatus(group: Group): void {
+    const currentDate = new Date();
+    if (group.status === GroupStatus.PENDING && currentDate > group.endDate) {
+      group.status = GroupStatus.CANCELLED;
+      this.groupRepository.save(group);
+      throw new BadRequestException(
+        'The group has expired and is now cancelled',
+      );
     }
   }
 }

@@ -8,4 +8,5 @@ export class CreateGroupDto {
   productId?: string;
   orderAmount?: number;
   maxMembers: number;
+  endDate: Date;
 }
