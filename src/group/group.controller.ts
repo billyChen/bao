@@ -37,6 +37,27 @@ export class GroupController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.groupService.remove(+id);
+    return this.groupService.delete(+id);
+  }
+
+  @Delete()
+  async deleteAll() {
+    await this.groupService.deleteAll();
+  }
+
+  @Patch(':id/add-member')
+  addMember(
+    @Param('id') groupId: string,
+    @Body() addUserDto: { userId: number },
+  ) {
+    return this.groupService.addMember(+groupId, addUserDto.userId);
+  }
+
+  @Patch('link/:link/add-member')
+  addMemberByLink(
+    @Param('link') link: string,
+    @Body() addUserDto: { userId: number },
+  ) {
+    return this.groupService.addMemberByLink(link, addUserDto.userId);
   }
 }
